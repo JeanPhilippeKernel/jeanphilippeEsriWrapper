@@ -13,6 +13,5 @@ $(document).ready(() => {
     // });
 
     let userListUrl = "https://jsonplaceholder.typicode.com/photos";
-    jp.Helpers.GetJson(userListUrl)
-        .then(datas => console.log(datas), err => console.log(err));
+    jp.Helpers.Get(userListUrl).then(datas => console.log(datas), err => console.log(err));
 });

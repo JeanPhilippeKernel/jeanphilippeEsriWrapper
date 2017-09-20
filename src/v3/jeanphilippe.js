@@ -43,40 +43,48 @@ var jp = (($) => {
 jp.Helpers.Get = (url, param) => {
     
     return new Promise((resolve, reject) => {
+        let _query = {
+            type : "GET",
+            url: url,
+            success : (values) => resolve(values),
+            error : (reason) => reject(reason)
+        };
+
         if (param !== null && param !== undefined) {
-            $.get(url, param)
-                .done(values => resolve(values))
-                .fail(reason => reject(reason));
+            _query.data = param;        
         }
-        else {
-            $.get(url)
-                .done(values => resolve(values))
-                .fail(reason => reject(reason));
-        }
+
+        $.ajax(_query);       
     });
 }
 
-jp.Helpers.GetJson = (url, param) => {
-    return new Promise((resolve, reject) => {
-        if (param !== null && param !== undefined) {
-            $.getJSON(url, param)
-                .done(values => resolve(values))
-                .fail(reason => reject(reason));
-        }
-        else {
-            $.getJSON(url)
-                .done(values => resolve(values))
-                .fail(reason => reject(reason));
-        }
-    });
-}
+// jp.Helpers.GetJson = (url, param) => {
+//     return new Promise((resolve, reject) => {
+//         let _query = {
+//             type : "GET",
+//             dataType : "json",
+//             url: url,
+//             success : (values) => resolve(values),
+//             error : (reason) => reject(reason)
+//         };
+//         if (param !== null && param !== undefined) {
+//             _query.data = param;
+//         }
+//         $.ajax(_query); 
+//     });
+// }
 
 jp.Helpers.Post = (url, param) => {
+    
     if (param !== null && param !== undefined) {
         return new Promise((resolve, reject) => {
-            $.post(url, param)
-                .done(values => resolve(values))
-                .fail(reason => reject(reason));
+            let _query = {
+                type : "POST",
+                url: url,
+                success : (values) => resolve(values),
+                error : (reason) => reject(reason)
+            };
+            $.ajax(_query);  
         });
     }
     else {

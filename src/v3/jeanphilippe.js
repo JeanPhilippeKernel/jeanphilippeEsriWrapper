@@ -16,10 +16,10 @@ var jp = (($) => {
 
     let _helpersNameSpace = {};
     let _mapV3NameSpace = {
-        Layers : {}
+        Layers: {}
     };
     let _mapV4NameSpace = {
-        Layers : {}
+        Layers: {}
     };
     return {
 
@@ -33,28 +33,28 @@ var jp = (($) => {
         },
         Helpers: _helpersNameSpace,
         Map: {
-            v3 : _mapV3NameSpace,
-            v4 : _mapV4NameSpace,             
+            v3: _mapV3NameSpace,
+            v4: _mapV4NameSpace,
         }
     };
 
 })($);
 
 jp.Helpers.Get = (url, param) => {
-    
+
     return new Promise((resolve, reject) => {
         let _query = {
-            type : "GET",
+            type: "GET",
             url: url,
-            success : (values) => resolve(values),
-            error : (reason) => reject(reason)
+            success: (values) => resolve(values),
+            error: (reason) => reject(reason)
         };
 
         if (param !== null && param !== undefined) {
-            _query.data = param;        
+            _query.data = param;
         }
 
-        $.ajax(_query);       
+        $.ajax(_query);
     });
 }
 
@@ -75,16 +75,16 @@ jp.Helpers.Get = (url, param) => {
 // }
 
 jp.Helpers.Post = (url, param) => {
-    
+
     if (param !== null && param !== undefined) {
         return new Promise((resolve, reject) => {
             let _query = {
-                type : "POST",
+                type: "POST",
                 url: url,
-                success : (values) => resolve(values),
-                error : (reason) => reject(reason)
+                success: (values) => resolve(values),
+                error: (reason) => reject(reason)
             };
-            $.ajax(_query);  
+            $.ajax(_query);
         });
     }
     else {
@@ -117,6 +117,20 @@ jp.Helpers.DisableElement = (htmlElement) => {
             $(htmlElement).attr('disabled', 'disabled');
     }
 }
+
+jp.Helpers.NormalizeUrlWithValue = (url, value) => {
+    if((typeof url !== 'null') && (typeof url !== 'undifined') 
+    && (typeof url === 'string') && (typeof value !== 'null') && (typeof value !== 'undifined')) {
+        let _innerUrl = url.split('/');
+        _innerUrl[_innerUrl.length - 1] = value;
+        _innerUrl = _innerUrl.join('/');
+        return _innerUrl;
+    }
+    else {
+        console.error("[!] you're maybe missed url/value parameter");
+    }
+}
+
 
 jp.Map.v3.CreateMap = (htmlContainer, settings, __callback) => {
     let _map = null;
@@ -159,18 +173,6 @@ jp.Map.v3.CenterMap = (mapObject, coordinate, zoomFactor) => {
 }
 
 
-jp.Map.v3.CenterMap = (mapObject, coordinate, zoomFactor) => {
-    require(["esri/geometry/Point"], (Point) => {
-        let _point = new Point(coordinate);
-        if (zoomFactor !== null && zoomFactor !== undefined) {
-            mapObject.centerAndZoom(_point, zoomFactor);
-        }
-        else {
-            mapObject.centerAt(_point);
-        }
-    });
-}
-
 jp.Map.v3.CreateMapExtent = (xmin, ymin, xmax, ymax, spatialReference, __callback) => {
     let _extent = null;
     if ((typeof xmin !== 'null') && (typeof xmin !== 'undefined')
@@ -178,7 +180,7 @@ jp.Map.v3.CreateMapExtent = (xmin, ymin, xmax, ymax, spatialReference, __callbac
         && (typeof xmax !== 'null') && (typeof xmax !== 'undefined')
         && (typeof ymax !== 'null') && (typeof ymax !== 'undefined')
         && (typeof spatialReference !== 'null') && (typeof spatialReference !== 'undefined')
-        && (typeof __callback !== 'function')) {
+        && (typeof __callback === 'function')) {
 
         require(["esri/geometry/Extent"], (Extent) => {
             _extent = new Extent(xmin, ymin, xmax, ymax, spatialReference);
@@ -429,6 +431,16 @@ jp.Map.v3.SetMapExtent = (mapObject, value) => {
         let deferredOp = mapObject.setExtent(value);
         deferredOp.then(() => console.log("set extent successed..."),
             err => console.error("error occured while setting extent : ", err));
+    }
+    else {
+        console.error("[!] map instance and/or value isn't defined...");
+    }
+}
+jp.Map.v3.SetMapSpatialReference = (mapObject, value) => {
+    if (mapObject !== null
+        && mapObject !== undefined
+        && value !== null && value !== undefined) {
+        mapObject.spatialReference = value;
     }
     else {
         console.error("[!] map instance and/or value isn't defined...");

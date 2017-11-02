@@ -1,5 +1,4 @@
 // ******************************************************************
-// Copyright (c) Jean Philippe KOUASSI . All rights reserved.
 // This code is licensed under the MIT License (MIT).
 // THE CODE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -16,7 +15,10 @@ var jp = (($) => {
 
     let _helpersNameSpace = {};
     let _mapV3NameSpace = {
-        Layers: {}
+        Layers: {},
+        Tasks : {},
+        Symbols : {},
+        Animation : {}
     };
     let _mapV4NameSpace = {
         Layers: {}
@@ -57,22 +59,6 @@ jp.Helpers.Get = (url, param) => {
         $.ajax(_query);
     });
 }
-
-// jp.Helpers.GetJson = (url, param) => {
-//     return new Promise((resolve, reject) => {
-//         let _query = {
-//             type : "GET",
-//             dataType : "json",
-//             url: url,
-//             success : (values) => resolve(values),
-//             error : (reason) => reject(reason)
-//         };
-//         if (param !== null && param !== undefined) {
-//             _query.data = param;
-//         }
-//         $.ajax(_query); 
-//     });
-// }
 
 jp.Helpers.Post = (url, param) => {
 
@@ -119,7 +105,7 @@ jp.Helpers.DisableElement = (htmlElement) => {
 }
 
 jp.Helpers.NormalizeUrlWithValue = (url, value) => {
-    if((typeof url !== 'null') && (typeof url !== 'undifined') 
+    if ((typeof url !== 'null') && (typeof url !== 'undifined')
     && (typeof url === 'string') && (typeof value !== 'null') && (typeof value !== 'undifined')) {
         let _innerUrl = url.split('/');
         _innerUrl[_innerUrl.length - 1] = value;
@@ -131,7 +117,11 @@ jp.Helpers.NormalizeUrlWithValue = (url, value) => {
     }
 }
 
-
+/** @description Create a map object asynchronously.  
+ *  @param {string} htmlContainer The id of html tag element. 
+ *  @param {object} settings The setting that will use to create map.
+ *  @param {function} __callback The callback function that will return the created instance of map object.
+ */
 jp.Map.v3.CreateMap = (htmlContainer, settings, __callback) => {
     let _map = null;
     settings = (settings === undefined || settings === null) ? { center: [-118, 34.5], zoom: 8, basemap: "topo" } : settings;
@@ -170,6 +160,7 @@ jp.Map.v3.CenterMap = (mapObject, coordinate, zoomFactor) => {
             mapObject.centerAt(_point);
         }
     });
+
 }
 
 
@@ -290,8 +281,6 @@ jp.Map.v3.GetMapSpatialReference = (mapObject) => {
         console.error("[!] this map instance isn't defined...");
 }
 
-
-
 jp.Map.v3.GetMapTimeExtent = () => {
 
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
@@ -344,7 +333,6 @@ jp.Map.v3.GetMapMaxZoom = (mapObject) => {
 }
 
 jp.Map.v3.GetMapScale = (mapObject) => {
-
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.getScale();
     }
@@ -449,6 +437,7 @@ jp.Map.v3.SetMapSpatialReference = (mapObject, value) => {
 
 jp.Map.v3.Layers.CreateDynamicMapServiceLayer = (url, setting, __callback) => {
     let dynamicServiceLayer = null;
+  
     setting = (setting === undefined || setting === null) ? { id: "defaultService" } : setting;
     if (typeof __callback === 'function') {
         require(["esri/layers/ArcGISDynamicMapServiceLayer"], (ArcGISDynamicMapServiceLayer) => {
@@ -460,6 +449,7 @@ jp.Map.v3.Layers.CreateDynamicMapServiceLayer = (url, setting, __callback) => {
         console.error("[!] the CreateDynamicMapServiceLayer method must have defined callback function");
     }
 }
+
 
 jp.Map.v3.Layers.CreateImageServiceLayer = (url, setting, __callback) => {
 
@@ -489,12 +479,89 @@ jp.Map.v3.Layers.CreateMapImageLayer = (url, setting, __callback) => {
 
 }
 
+jp.Map.v3.Layers.GetServiceLayerProperty = (url, __callback) => {
 
-jp.Map.v3.Symbols = {};
+    if (typeof url !== 'null' && typeof url !== 'undifined' && typeof url === 'string' && typeof __callback === 'function') {
+        const _query_string = "?f=pjson";
+        let _service_property = {
+            layers: [],
+            spatialReference: 0,
+            initialExtent: { xmin: 0.0, ymin: 0.0, xmax: 0.0, ymax: 0.0 },
+            fullExtent: { xmin: 0.0, ymin: 0.0, xmax: 0.0, ymax: 0.0 }
+        };
 
-jp.Map.v3.Tasks = {};
+        let _contain_queryString = url.search("f=pjson");
+        if (_contain_queryString > -1) {
+            jp.Helpers.Get(url).then(results => {
+                results = JSON.parse(results);
+                $.each(results["layers"], (i, e) => { _service_property.layers.push({ id: e["id"], name: e["name"] }); });
+                _service_property.spatialReference = results["spatialReference"]["wkid"];
+                _service_property.initialExtent.xmin = results["initialExtent"]["xmin"];
+                _service_property.initialExtent.ymin = results["initialExtent"]["ymin"];
+                _service_property.initialExtent.xmax = results["initialExtent"]["xmax"];
+                _service_property.initialExtent.ymax = results["initialExtent"]["ymax"];
+                _service_property.fullExtent.xmin = results["fullExtent"]["xmin"];
+                _service_property.fullExtent.ymin = results["fullExtent"]["ymin"];
+                _service_property.fullExtent.xmax = results["fullExtent"]["xmax"];
+                _service_property.fullExtent.ymax = results["fullExtent"]["ymax"];
+                __callback(_service_property);
+            }, reason => { console.error("the service url seems to be invalid....") });
+        }
+        else {
+            let _normalize_url = url.split('/');
+            _normalize_url[_normalize_url.length - 1] = _normalize_url[_normalize_url.length - 1].concat(_query_string);
+            _normalize_url = _normalize_url.join('/');
+            jp.Helpers.Get(_normalize_url).then(results => {
+                results = JSON.parse(results);
+                $.each(results["layers"], (i, e) => { _service_property.layers.push({ id: e["id"], name: e["name"] }); });
+                _service_property.spatialReference = results["spatialReference"]["wkid"];
+                _service_property.initialExtent.xmin = results["initialExtent"]["xmin"];
+                _service_property.initialExtent.ymin = results["initialExtent"]["ymin"];
+                _service_property.initialExtent.xmax = results["initialExtent"]["xmax"];
+                _service_property.initialExtent.ymax = results["initialExtent"]["ymax"];
+                _service_property.fullExtent.xmin = results["fullExtent"]["xmin"];
+                _service_property.fullExtent.ymin = results["fullExtent"]["ymin"];
+                _service_property.fullExtent.xmax = results["fullExtent"]["xmax"];
+                _service_property.fullExtent.ymax = results["fullExtent"]["ymax"];
+                __callback(_service_property);
+            }, reason => { console.error("the service url seems to be invalid....") });
+        }
+    }
+    else {
+        console.error("[!] the url parameter must be defined and its type must be a string")
+    }
+}
 
-jp.Map.v3.Animation = {};
+jp.Map.v3.Tasks.CreateQuery = (setting, __callback) => {
+    if(typeof setting !== 'null'  && typeof setting !== 'undefined' 
+        && typeof __callback !== 'null' && typeof __callback !== 'undefined' 
+        && typeof __callback === 'function') {
+        require(["esri/tasks/query"], (Query) => {
+            let _query = new Query();
+            _query.outFields = setting.outFields;
+            _query.returnGeometry = setting.returnGeometry;
+            _query.where = setting.where;
+            __callback(_query);
+        });
+    }
+    else {
+        console.error("[!] the setting and/or _callback function aren't defined");
+    }
+}
+
+jp.Map.v3.Tasks.ExecuteQuery = (url, queryParams, __callback, __errback) => {
+    if(typeof url !== 'null' && typeof url !== 'undefined' && typeof queryParams !== 'null' 
+        && typeof queryParams !== 'undefined'
+        && typeof __callback === 'function' && typeof __errback === 'function') {
+        require(["esri/tasks/QueryTask"], (QueryTask) => {
+            let _queryTask = new QueryTask(url);
+            _queryTask.execute(queryParams, __callback, __errback);
+        });
+    }
+    else {
+        console.error("[!] the url, query parameter and/or _callback, _errback function aren't defined");
+    }
+}
 
 jp.Init();
 

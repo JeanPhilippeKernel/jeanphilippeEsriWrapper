@@ -16,9 +16,9 @@ var jp = (($) => {
     let _helpersNameSpace = {};
     let _mapV3NameSpace = {
         Layers: {},
-        Tasks : {},
-        Symbols : {},
-        Animation : {}
+        Tasks: {},
+        Symbols: {},
+        Animation: {}
     };
     let _mapV4NameSpace = {
         Layers: {}
@@ -67,6 +67,7 @@ jp.Helpers.Post = (url, param) => {
             let _query = {
                 type: "POST",
                 url: url,
+                data: param,
                 success: (values) => resolve(values),
                 error: (reason) => reject(reason)
             };
@@ -153,6 +154,8 @@ jp.Map.v3.DestroyMap = (mapObject) => {
 jp.Map.v3.CenterMap = (mapObject, coordinate, zoomFactor) => {
     require(["esri/geometry/Point"], (Point) => {
         let _point = new Point(coordinate);
+        _point.setSpatialReference(mapObject.spatialReference);
+
         if (zoomFactor !== null && zoomFactor !== undefined) {
             mapObject.centerAndZoom(_point, zoomFactor);
         }
@@ -437,7 +440,7 @@ jp.Map.v3.SetMapSpatialReference = (mapObject, value) => {
 
 jp.Map.v3.Layers.CreateDynamicMapServiceLayer = (url, setting, __callback) => {
     let dynamicServiceLayer = null;
-  
+
     setting = (setting === undefined || setting === null) ? { id: "defaultService" } : setting;
     if (typeof __callback === 'function') {
         require(["esri/layers/ArcGISDynamicMapServiceLayer"], (ArcGISDynamicMapServiceLayer) => {
@@ -533,8 +536,8 @@ jp.Map.v3.Layers.GetServiceLayerProperty = (url, __callback) => {
 }
 
 jp.Map.v3.Tasks.CreateQuery = (setting, __callback) => {
-    if(typeof setting !== 'null'  && typeof setting !== 'undefined' 
-        && typeof __callback !== 'null' && typeof __callback !== 'undefined' 
+    if (typeof setting !== 'null' && typeof setting !== 'undefined'
+        && typeof __callback !== 'null' && typeof __callback !== 'undefined'
         && typeof __callback === 'function') {
         require(["esri/tasks/query"], (Query) => {
             let _query = new Query();
@@ -550,7 +553,7 @@ jp.Map.v3.Tasks.CreateQuery = (setting, __callback) => {
 }
 
 jp.Map.v3.Tasks.ExecuteQuery = (url, queryParams, __callback, __errback) => {
-    if(typeof url !== 'null' && typeof url !== 'undefined' && typeof queryParams !== 'null' 
+    if (typeof url !== 'null' && typeof url !== 'undefined' && typeof queryParams !== 'null'
         && typeof queryParams !== 'undefined'
         && typeof __callback === 'function' && typeof __errback === 'function') {
         require(["esri/tasks/QueryTask"], (QueryTask) => {

@@ -9,7 +9,9 @@
 // THE CODE OR THE USE OR OTHER DEALINGS IN THE CODE.
 // ******************************************************************
 
-'use strict';
+"use strict";
+
+/*jshint esversion:6*/
 
 var jp = (($) => {
 
@@ -57,7 +59,7 @@ jp.Helpers.Get = (url, param) => {
 
         $.ajax(_query);
     });
-}
+};
 
 jp.Helpers.Post = (url, param) => {
 
@@ -75,7 +77,7 @@ jp.Helpers.Post = (url, param) => {
     } else {
         throw new Error("Unable to do post operation with no datas parameter\nCheck the param's parameter value");
     }
-}
+};
 
 jp.Helpers.EnableElement = (htmlElement) => {
     if (typeof htmlElement === 'object' && htmlElement.hasOwnProperty("length")) {
@@ -87,7 +89,7 @@ jp.Helpers.EnableElement = (htmlElement) => {
         if (($(htmlElement).attr("disabled") === "disabled") || ($(htmlElement).attr("disabled") === ""))
             $(htmlElement).removeAttr("disabled");
     }
-}
+};
 
 jp.Helpers.DisableElement = (htmlElement) => {
     if (typeof htmlElement === 'object' && htmlElement.hasOwnProperty("length")) {
@@ -99,7 +101,7 @@ jp.Helpers.DisableElement = (htmlElement) => {
         if ($(htmlElement).attr('disabled') !== 'disabled')
             $(htmlElement).attr('disabled', 'disabled');
     }
-}
+};
 
 jp.Helpers.NormalizeUrlWithValue = (url, value) => {
     if ((typeof url !== 'null') && (typeof url !== 'undifined') &&
@@ -111,43 +113,154 @@ jp.Helpers.NormalizeUrlWithValue = (url, value) => {
     } else {
         console.error("[!] you're maybe missed url/value parameter");
     }
-}
+};
 
-jp.Helpers.ReplaceSpecialChar = (textInput) => {
-    let TabSpec = {
-        "à": "a",
-        "á": "a",
-        "â": "a",
-        "ã": "a",
-        "ä": "a",
-        "å": "a",
-        "ò": "o",
-        "ó": "o",
-        "ô": "o",
-        "õ": "o",
-        "ö": "o",
-        "ø": "o",
-        "è": "e",
-        "é": "e",
-        "ê": "e",
-        "ë": "e",
-        "ç": "c",
-        "ì": "i",
-        "í": "i",
-        "î": "i",
-        "ï": "i",
-        "ù": "u",
-        "ú": "u",
-        "û": "u",
-        "ü": "u",
-        "ÿ": "y",
-        "ñ": "n",
-        "-": " ",
-        "_": " "
-    };
-    let reg = /[àáäâèéêëçìíîïòóôõöøùúûüÿñ_-]/gi;
+jp.Helpers.ReplaceSpecialChar = (textInput, includeDashChar, includeUnderlineChar) => {
+    let TabSpec = null;
+    let reg = null;
+
+    if (includeDashChar === undefined && includeUnderlineChar === undefined) {
+        includeDashChar = true;
+        includeUnderlineChar = true;
+    }
+
+    if (includeDashChar === true && includeUnderlineChar === true) {
+        TabSpec = {
+            "à": "a",
+            "á": "a",
+            "â": "a",
+            "ã": "a",
+            "ä": "a",
+            "å": "a",
+            "ò": "o",
+            "ó": "o",
+            "ô": "o",
+            "õ": "o",
+            "ö": "o",
+            "ø": "o",
+            "è": "e",
+            "é": "e",
+            "ê": "e",
+            "ë": "e",
+            "ç": "c",
+            "ì": "i",
+            "í": "i",
+            "î": "i",
+            "ï": "i",
+            "ù": "u",
+            "ú": "u",
+            "û": "u",
+            "ü": "u",
+            "ÿ": "y",
+            "ñ": "n",
+            "-": " ",
+            "_": " "
+        };
+        reg = /[àáäâèéêëçìíîïòóôõöøùúûüÿñ_-]/gi;
+    }
+
+    else if (includeDashChar === false && includeUnderlineChar === true) {
+        TabSpec = {
+            "à": "a",
+            "á": "a",
+            "â": "a",
+            "ã": "a",
+            "ä": "a",
+            "å": "a",
+            "ò": "o",
+            "ó": "o",
+            "ô": "o",
+            "õ": "o",
+            "ö": "o",
+            "ø": "o",
+            "è": "e",
+            "é": "e",
+            "ê": "e",
+            "ë": "e",
+            "ç": "c",
+            "ì": "i",
+            "í": "i",
+            "î": "i",
+            "ï": "i",
+            "ù": "u",
+            "ú": "u",
+            "û": "u",
+            "ü": "u",
+            "ÿ": "y",
+            "ñ": "n",
+            "_": " "
+        };
+        reg = /[àáäâèéêëçìíîïòóôõöøùúûüÿñ_]/gi;
+    }
+
+    else if (includeDashChar === true && includeUnderlineChar === false) {
+        TabSpec = {
+            "à": "a",
+            "á": "a",
+            "â": "a",
+            "ã": "a",
+            "ä": "a",
+            "å": "a",
+            "ò": "o",
+            "ó": "o",
+            "ô": "o",
+            "õ": "o",
+            "ö": "o",
+            "ø": "o",
+            "è": "e",
+            "é": "e",
+            "ê": "e",
+            "ë": "e",
+            "ç": "c",
+            "ì": "i",
+            "í": "i",
+            "î": "i",
+            "ï": "i",
+            "ù": "u",
+            "ú": "u",
+            "û": "u",
+            "ü": "u",
+            "ÿ": "y",
+            "ñ": "n",
+            "-": " "
+        };
+        reg = /[àáäâèéêëçìíîïòóôõöøùúûüÿñ-]/gi;
+    }
+    else if (includeDashChar === false && includeUnderlineChar === false) {
+        TabSpec = {
+            "à": "a",
+            "á": "a",
+            "â": "a",
+            "ã": "a",
+            "ä": "a",
+            "å": "a",
+            "ò": "o",
+            "ó": "o",
+            "ô": "o",
+            "õ": "o",
+            "ö": "o",
+            "ø": "o",
+            "è": "e",
+            "é": "e",
+            "ê": "e",
+            "ë": "e",
+            "ç": "c",
+            "ì": "i",
+            "í": "i",
+            "î": "i",
+            "ï": "i",
+            "ù": "u",
+            "ú": "u",
+            "û": "u",
+            "ü": "u",
+            "ÿ": "y",
+            "ñ": "n"
+        };
+        reg = /[àáäâèéêëçìíîïòóôõöøùúûüÿñ]/gi;
+    }
+
     return textInput.replace(reg, function () { return TabSpec[arguments[0].toLowerCase()]; }).toLowerCase();
-}
+};
 
 /** @description Create a map object asynchronously.  
  *  @param {string} htmlContainer The id of html tag element. 
@@ -172,16 +285,16 @@ jp.Map.v3.CreateMap = (htmlContainer, settings, __callback) => {
             _map = new Map(htmlContainer, settings);
         });
     } else {
-        console.error("[!] CreateMap method must have a callback function..")
+        console.error("[!] CreateMap method must have a callback function..");
     }
-}
+};
 
 jp.Map.v3.DestroyMap = (mapObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         mapObject.destroy();
     } else
         console.error("[!] the object map isn't defined...");
-}
+};
 
 jp.Map.v3.CenterMap = (mapObject, coordinate, zoomFactor) => {
     require(["esri/geometry/Point"], (Point) => {
@@ -195,7 +308,7 @@ jp.Map.v3.CenterMap = (mapObject, coordinate, zoomFactor) => {
         }
     });
 
-}
+};
 
 
 jp.Map.v3.CreateMapExtent = (xmin, ymin, xmax, ymax, spatialReference, __callback) => {
@@ -227,7 +340,7 @@ jp.Map.v3.CreateMapExtentByJSON = (extentJSON, __callback) => {
     } else {
         console.error("[!] We're unable to create an Extent's object");
     }
-}
+};
 
 jp.Map.v3.CreateMapSpatialReference = (spatialRef, __callback) => {
     let _spatialReference = null;
@@ -239,7 +352,7 @@ jp.Map.v3.CreateMapSpatialReference = (spatialRef, __callback) => {
     } else {
         console.error("[!] the spatial reference and/or the callback function isn't defined");
     }
-}
+};
 
 jp.Map.v3.AddMapLayer = (mapObject, layerObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined') &&
@@ -249,7 +362,7 @@ jp.Map.v3.AddMapLayer = (mapObject, layerObject) => {
         console.error("[!] map instance and/or layer isn't defined...");
     }
 
-}
+};
 
 jp.Map.v3.AddMapLayerArray = (mapObject, layerArray) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined') &&
@@ -258,7 +371,7 @@ jp.Map.v3.AddMapLayerArray = (mapObject, layerArray) => {
     } else {
         console.error("[!] map instance and/or layers isn't defined...");
     }
-}
+};
 
 jp.Map.v3.RemoveMapLayer = (mapObject, layerObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined') &&
@@ -267,42 +380,42 @@ jp.Map.v3.RemoveMapLayer = (mapObject, layerObject) => {
     } else {
         console.error("[!] map instance and/or layer isn't defined...");
     }
-}
+};
 
 jp.Map.v3.GetMapGraphicLayersIdsArray = (mapObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.graphicsLayerIds;
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 
 jp.Map.v3.GetMapLayerById = (mapObject, id) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.getLayer(id);
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 
 jp.Map.v3.GetMapLayerIdsArray = (mapObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.layerIds;
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 
 jp.Map.v3.GetMapBackgroundColor = (mapObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.backgroundColor;
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 
 jp.Map.v3.GetMapSpatialReference = (mapObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.spatialReference;
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 
 jp.Map.v3.GetMapTimeExtent = () => {
 
@@ -310,70 +423,70 @@ jp.Map.v3.GetMapTimeExtent = () => {
         return mapObject.timeExtent;
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 jp.Map.v3.GetMapExtent = (mapObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.extent;
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 jp.Map.v3.GetMapVisibility = (mapObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.visible;
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 jp.Map.v3.GetMapBasemap = (mapObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.getBasemap();
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 jp.Map.v3.GetMapZoom = (mapObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.getZoom();
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 jp.Map.v3.GetMapMinZoom = (mapObject) => {
-    if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
+    if ((typeof mapObject !== "null") && (typeof mapObject !== 'undefined')) {
         return mapObject.getMinZoom();
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 jp.Map.v3.GetMapMaxZoom = (mapObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.getMaxZoom();
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 
 jp.Map.v3.GetMapScale = (mapObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.getScale();
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 
 jp.Map.v3.GetMapMinScale = (mapObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.getMinScale();
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 jp.Map.v3.GetMapMaxScale = (mapObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.getMaxScale();
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 
 jp.Map.v3.GetMapLevel = (mapObject) => {
     if ((typeof mapObject !== 'null') && (typeof mapObject !== 'undefined')) {
         return mapObject.getLevel();
     } else
         console.error("[!] this map instance isn't defined...");
-}
+};
 
 //setter methods
 jp.Map.v3.SetMapVisibility = (mapObject, value) => {
@@ -381,7 +494,7 @@ jp.Map.v3.SetMapVisibility = (mapObject, value) => {
         ((value !== null) && (value !== undefined) && (typeof value === 'boolean'))) {
         mapObject.setVisibility(value);
     }
-}
+};
 jp.Map.v3.SetMapBackgroundColor = (mapObject, value) => {
     if ((mapObject !== null) && (mapObject !== undefined) &&
         ((value !== null) && (value !== undefined))) {
@@ -389,7 +502,7 @@ jp.Map.v3.SetMapBackgroundColor = (mapObject, value) => {
     } else {
         console.error("[!] map instance and/or value isn't defined...");
     }
-}
+};
 jp.Map.v3.SetMapZoom = (mapObject, value) => {
     if ((mapObject !== null) && (mapObject !== undefined) &&
         ((value !== null) && (value !== undefined))) {
@@ -399,7 +512,7 @@ jp.Map.v3.SetMapZoom = (mapObject, value) => {
     } else {
         console.error("[!] map instance and/or value isn't defined...");
     }
-}
+};
 jp.Map.v3.SetMapScale = (mapObject, value) => {
     if ((mapObject !== null) && (mapObject !== undefined) &&
         ((value !== null) && (value !== undefined))) {
@@ -409,7 +522,7 @@ jp.Map.v3.SetMapScale = (mapObject, value) => {
     } else {
         console.error("[!] map instance and/or value isn't defined...");
     }
-}
+};
 jp.Map.v3.SetMapLevel = (mapObject, value) => {
     if ((mapObject !== null) && (mapObject !== undefined) &&
         ((value !== null) && (value !== undefined))) {
@@ -419,7 +532,7 @@ jp.Map.v3.SetMapLevel = (mapObject, value) => {
     } else {
         console.error("[!] map instance and/or value isn't defined...");
     }
-}
+};
 
 jp.Map.v3.SetMapExtent = (mapObject, value) => {
     if ((mapObject !== null) && (mapObject !== undefined) &&
@@ -430,7 +543,7 @@ jp.Map.v3.SetMapExtent = (mapObject, value) => {
     } else {
         console.error("[!] map instance and/or value isn't defined...");
     }
-}
+};
 jp.Map.v3.SetMapSpatialReference = (mapObject, value) => {
     if (mapObject !== null &&
         mapObject !== undefined &&
@@ -439,7 +552,7 @@ jp.Map.v3.SetMapSpatialReference = (mapObject, value) => {
     } else {
         console.error("[!] map instance and/or value isn't defined...");
     }
-}
+};
 
 jp.Map.v3.Layers.CreateDynamicMapServiceLayer = (url, setting, __callback) => {
     let dynamicServiceLayer = null;
@@ -455,7 +568,7 @@ jp.Map.v3.Layers.CreateDynamicMapServiceLayer = (url, setting, __callback) => {
     } else {
         console.error("[!] the CreateDynamicMapServiceLayer method must have defined callback function");
     }
-}
+};
 
 
 jp.Map.v3.Layers.CreateImageServiceLayer = (url, setting, __callback) => {

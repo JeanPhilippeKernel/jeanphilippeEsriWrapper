@@ -14,4 +14,6 @@ $(document).ready(() => {
 
     let userListUrl = "https://jsonplaceholder.typicode.com/photos";
     jp.Helpers.Get(userListUrl).then(datas => console.log(datas), err => console.log(err));
+	let stringText = "Mariam joue/à la balle avec réné";
+	console.log('ReplaceSpecialChar '+ jp.Helpers.ReplaceSpecialChar(stringText));
 });
